@@ -250,6 +250,9 @@
     </div>
 
     <script>
+// 2단계에서 복사한 Google Apps Script 웹 앱 URL을 넣으세요.
+    const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwdkySM983GJGBr7AN5gJHSPPv2U4kgtTBzlnvx-yFB6vUVBaPKXgmZ74qkxTnMb9u-zg/exec";
+        
         // State
         let friendName = "지은이";
         let currentQuestion = 0;
@@ -740,15 +743,26 @@
                 eventHistory: [...appendOnlyEvents] // Append-only timeline
             };
 
+            // 1. 기존 로컬저장소 백업
             let existing = [];
             try {
                 existing = JSON.parse(localStorage.getItem("bday_survey_admin_data")) || [];
             } catch (e) {
                 existing = [];
             }
-
             existing.unshift(entry);
             localStorage.setItem("bday_survey_admin_data", JSON.stringify(existing));
+
+            // 2. Google Sheets DB로 저장 요청 보내기 (POST)
+            if (GOOGLE_SCRIPT_URL) {
+                fetch(GOOGLE_SCRIPT_URL, {
+                    method: "POST",
+                    mode: "no-cors",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(entry)
+                }).catch(err => console.error("Google Sheets 저장 실패:", err));
+            }
+        }
         }
 
         function openAdminDashboard() {
@@ -757,6 +771,13 @@
             document.getElementById("result-screen").classList.add("hidden");
             document.getElementById("admin-screen").classList.remove("hidden");
 
+            // 데이터를 가져오는 동안 표시할 로딩 화면
+            document.getElementById("admin-responses-list").innerHTML = `
+                <div class="text-center py-8 text-slate-500 text-xs font-bold">
+                    <i class="fa-solid fa-spinner animate-spin text-lg mb-2"></i><br>
+                    구글 시트에서 최신 응답 데이터를 불러오는 중...
+                </div>
+            `;
             renderAdminDashboard();
         }
 
@@ -765,12 +786,21 @@
             document.getElementById("start-screen").classList.remove("hidden");
         }
 
-        function renderAdminDashboard() {
+        async function renderAdminDashboard() {
             let data = [];
-            try {
+
+            // Google Sheets에서 최신 데이터 가져오기 (GET)
+            if (GOOGLE_SCRIPT_URL) {
+                try {
+                    const res = await fetch(GOOGLE_SCRIPT_URL);
+                    data = await res.json();
+                    data.sort((a, b) => b.id - a.id); // 최신 응답 순서 정렬
+                } catch (e) {
+                    console.error("원격 DB 불러오기 실패, 로컬데이터 사용:", e);
+                    data = JSON.parse(localStorage.getItem("bday_survey_admin_data")) || [];
+                }
+            } else {
                 data = JSON.parse(localStorage.getItem("bday_survey_admin_data")) || [];
-            } catch (e) {
-                data = [];
             }
 
             const countEl = document.getElementById("admin-data-count");
@@ -789,6 +819,8 @@
                 `;
                 return;
             }
+
+            // [참고] 이 아래쪽의 data.forEach((entry, idx) => { ... }) 부분은 기존 코드 그대로 유지하시면 됩니다!
 
             data.forEach((entry, idx) => {
                 const card = document.createElement("div");
