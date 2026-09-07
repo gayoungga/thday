@@ -81,9 +81,9 @@
                     ✨ 이름을 입력하세요
                 </label>
                 <div class="relative flex gap-2">
-                    <input type="text" id="friend-name" placeholder="김태현" 
+                    <input type="text" id="friend-name" placeholder="예: 지은이, 민수" 
                         class="w-full px-4 py-2.5 bg-white border border-slate-300 rounded-xl text-slate-800 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 font-medium"
-                        value="김태현">
+                        value="지은이">
                     <button type="button" onclick="updateFriendName()" class="text-xs bg-blue-600 hover:bg-blue-700 text-white font-bold px-4 py-2.5 rounded-xl transition shrink-0">
                         확인
                     </button>
@@ -250,9 +250,9 @@
     </div>
 
     <script>
-// 2단계에서 복사한 Google Apps Script 웹 앱 URL을 넣으세요.
-    const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwdkySM983GJGBr7AN5gJHSPPv2U4kgtTBzlnvx-yFB6vUVBaPKXgmZ74qkxTnMb9u-zg/exec";
-        
+        // 📌 1단계에서 배포한 Apps Script 웹 앱 URL을 아래 큰따옴표 안에 넣어주세요!
+        const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwdkySM983GJGBr7AN5gJHSPPv2U4kgtTBzlnvx-yFB6vUVBaPKXgmZ74qkxTnMb9u-zg/exec";
+
         // State
         let friendName = "지은이";
         let currentQuestion = 0;
@@ -268,7 +268,7 @@
         let secretClickCount = 0;
         let secretTimer = null;
 
-        // 12 Carefully Designed Disguised Questions (Q8 removed, Q11 updated, Q12 updated)
+        // 12 Carefully Designed Disguised Questions
         const questions = [
             {
                 id: 1,
@@ -294,7 +294,7 @@
                 type: "single",
                 options: [
                     { text: '너무 좋아! 준비하고 바로 나간다', key: "SURPRISE_LIKE", tag: "즉흥성: 매우높음" },
-                    { text: '미리 말해주지... 계획이 있다하고 거절한다', key: "SURPRISE_HATE", tag: "즉흥성: 계획파" }
+                    { text: '아... 미리 말해주지... 고민하다 거절한다', key: "SURPRISE_HATE", tag: "즉흥성: 계획파" }
                 ]
             },
             {
@@ -366,7 +366,7 @@
                 type: "multi",
                 maxSelect: 2,
                 options: [
-                    { text: '근사한 레스토랑에서 촛불 켜고 기분 좋은 식사', key: "PERFECT_DINING" },
+                    { text: '근사한 레스토랑에서 촛불 켜고 로맨틱한 식사', key: "PERFECT_DINING" },
                     { text: '감성 숙소나 프라이빗한 공간에서 둘만의 시간 보내기', key: "PERFECT_PRIVATE" },
                     { text: '햇살 좋은 날 핫플 카페와 예쁜 거리에서 데이트', key: "PERFECT_HOTPLACE" },
                     { text: '맛있는 거 먹고 좋은 경치 보면서 여유롭게 보내기', key: "PERFECT_NATURE" },
@@ -505,7 +505,6 @@
             const timeSpentMs = Date.now() - questionStartTime;
             const timeSpentSec = +(timeSpentMs / 1000).toFixed(1);
 
-            // Check how many previous choices were recorded for this question ID
             const prevQEvents = appendOnlyEvents.filter(e => e.qId === q.id);
             const isFirstSelection = prevQEvents.length === 0;
 
@@ -531,10 +530,8 @@
             const q = questions[currentQuestion];
             const selected = q.options[idx];
 
-            // Record append-only event
             recordAppendOnlyEvent(q, selected.text, selected.key);
 
-            // Update or push final answer for this question
             const existingIdx = userAnswers.findIndex(a => a.qId === q.id);
             const answerObj = {
                 qId: q.id,
@@ -568,7 +565,6 @@
                 multiSelected.push(idx);
             }
 
-            // Update UI
             q.options.forEach((_, i) => {
                 const btn = document.getElementById(`multi-opt-${i}`);
                 const check = document.getElementById(`multi-check-${i}`);
@@ -660,7 +656,6 @@
             document.getElementById("question-screen").classList.add("hidden");
             document.getElementById("loading-screen").classList.remove("hidden");
 
-            // Save response data and append-only timeline logs
             saveResponseDataLocally();
 
             setTimeout(() => {
@@ -677,7 +672,6 @@
             const multiKeys = userAnswers.find(a => a.qId === 11)?.keys || [];
             const has = (key) => answerKeys.includes(key) || multiKeys.includes(key);
 
-            // Personality Title
             let typeTitle = "소소한 행복 추구형";
             if (has("PERFECT_DINING")) typeTitle = "로맨틱 파인 다이닝파";
             else if (has("PERFECT_PRIVATE")) typeTitle = "프라이빗 아늑 감성파";
@@ -688,13 +682,11 @@
 
             document.getElementById("result-type-title").textContent = typeTitle;
 
-            // Dynamic Star Ratings
             const sensitivityStar = (has("DEEP_THINK") || has("SENSITIVE_CARE") || has("EXPRESS_REMEMBER")) ? "⭐⭐⭐⭐⭐" : "⭐⭐⭐⭐☆";
             const spontaneityStar = (has("SURPRISE_LIKE") || has("EVENT_SURPRISE")) ? "⭐⭐⭐⭐☆" : "⭐⭐⭐☆☆";
             document.getElementById("star-sensitivity").textContent = sensitivityStar;
             document.getElementById("star-spontaneity").textContent = spontaneityStar;
 
-            // 5 Disguised Traits (Without '항목' word)
             let trait1 = (has("TIME_DAY") || has("MOOD_DAY"))
                 ? { title: "☀️ 햇살 가득 낮 시간대 선호", desc: "선선한 바람과 따스한 햇살 아래 낮에 즐기는 데이트에서 가장 큰 만족을 느낍니다.", bg: "bg-amber-50 border-amber-200 text-amber-900" }
                 : { title: "🌙 은은한 밤 야경 로맨티스트", desc: "아름다운 야경과 신비롭고 로맨틱한 분위기의 밤 시간대를 훨씬 더 선호합니다.", bg: "bg-indigo-50 border-indigo-200 text-indigo-900" };
@@ -730,6 +722,7 @@
             });
         }
 
+        // 📌 구글 시트 저장 및 불러오기 수정 부분 시작
         function saveResponseDataLocally() {
             const dateStr = new Date().toLocaleString('ko-KR', {
                 month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit'
@@ -740,10 +733,10 @@
                 name: friendName,
                 date: dateStr,
                 finalAnswers: [...userAnswers],
-                eventHistory: [...appendOnlyEvents] // Append-only timeline
+                eventHistory: [...appendOnlyEvents]
             };
 
-            // 1. 기존 로컬저장소 백업
+            // 1. 로컬 백업 저장
             let existing = [];
             try {
                 existing = JSON.parse(localStorage.getItem("bday_survey_admin_data")) || [];
@@ -753,8 +746,8 @@
             existing.unshift(entry);
             localStorage.setItem("bday_survey_admin_data", JSON.stringify(existing));
 
-            // 2. Google Sheets DB로 저장 요청 보내기 (POST)
-            if (GOOGLE_SCRIPT_URL) {
+            // 2. Google Sheets 저장 전송 (POST)
+            if (GOOGLE_SCRIPT_URL && !GOOGLE_SCRIPT_URL.includes("YOUR_APPS_SCRIPT_ID")) {
                 fetch(GOOGLE_SCRIPT_URL, {
                     method: "POST",
                     mode: "no-cors",
@@ -763,7 +756,6 @@
                 }).catch(err => console.error("Google Sheets 저장 실패:", err));
             }
         }
-        }
 
         function openAdminDashboard() {
             document.getElementById("start-screen").classList.add("hidden");
@@ -771,7 +763,6 @@
             document.getElementById("result-screen").classList.add("hidden");
             document.getElementById("admin-screen").classList.remove("hidden");
 
-            // 데이터를 가져오는 동안 표시할 로딩 화면
             document.getElementById("admin-responses-list").innerHTML = `
                 <div class="text-center py-8 text-slate-500 text-xs font-bold">
                     <i class="fa-solid fa-spinner animate-spin text-lg mb-2"></i><br>
@@ -789,12 +780,12 @@
         async function renderAdminDashboard() {
             let data = [];
 
-            // Google Sheets에서 최신 데이터 가져오기 (GET)
-            if (GOOGLE_SCRIPT_URL) {
+            // 3. Google Sheets에서 최신 DB 데이터 불러오기 (GET)
+            if (GOOGLE_SCRIPT_URL && !GOOGLE_SCRIPT_URL.includes("YOUR_APPS_SCRIPT_ID")) {
                 try {
                     const res = await fetch(GOOGLE_SCRIPT_URL);
                     data = await res.json();
-                    data.sort((a, b) => b.id - a.id); // 최신 응답 순서 정렬
+                    data.sort((a, b) => b.id - a.id);
                 } catch (e) {
                     console.error("원격 DB 불러오기 실패, 로컬데이터 사용:", e);
                     data = JSON.parse(localStorage.getItem("bday_survey_admin_data")) || [];
@@ -820,8 +811,6 @@
                 return;
             }
 
-            // [참고] 이 아래쪽의 data.forEach((entry, idx) => { ... }) 부분은 기존 코드 그대로 유지하시면 됩니다!
-
             data.forEach((entry, idx) => {
                 const card = document.createElement("div");
                 card.className = "bg-slate-50 border border-slate-200 rounded-2xl p-4 text-xs font-medium space-y-3.5 relative";
@@ -829,7 +818,6 @@
                 const history = entry.eventHistory || [];
                 const finalAnswers = entry.finalAnswers || [];
 
-                // Synthesize key tags from final answers
                 const keys = finalAnswers.map(a => a.key).filter(Boolean);
                 const multiKeys = finalAnswers.find(a => a.qId === 11)?.keys || [];
                 const allKeys = [...keys, ...multiKeys];
@@ -841,11 +829,9 @@
                 const wishText = finalAnswers.find(a => a.qId === 12)?.answerText || "없음";
                 const perfectBdayChoice = finalAnswers.find(a => a.qId === 11)?.answerText || "기본 선택";
 
-                // Detailed Timing & Change Analysis
-                // Group history by qId
                 let totalTimeSec = 0;
                 let totalChangesCount = 0;
-                let qStatsMap = {}; // { qId: { firstChoice, finalChoice, firstTimeSec, finalTimeSec, changesCount, historyList } }
+                let qStatsMap = {};
 
                 history.forEach(ev => {
                     totalTimeSec += ev.timeSpentSec || 0;
@@ -872,12 +858,10 @@
                 const qStatsList = Object.values(qStatsMap);
                 const avgTimeSec = qStatsList.length ? (totalTimeSec / qStatsList.length).toFixed(1) : "0.0";
                 
-                // Find longest thought question & most changed question
                 let longestQ = qStatsList.length ? qStatsList.reduce((max, cur) => (cur.finalTimeSec > max.finalTimeSec ? cur : max), qStatsList[0]) : null;
                 let fastestQ = qStatsList.length ? qStatsList.reduce((min, cur) => (cur.firstTimeSec < min.firstTimeSec ? cur : min), qStatsList[0]) : null;
                 let mostChangedQ = qStatsList.length ? qStatsList.reduce((max, cur) => (cur.changesCount > max.changesCount ? cur : max), qStatsList[0]) : null;
 
-                // Build Decision Hesitation Insights
                 let hesitationInsights = [];
                 qStatsList.forEach(stat => {
                     if (stat.changesCount > 0) {
@@ -887,7 +871,6 @@
                     }
                 });
 
-                // Generate Custom Birthday Planning Action Guide
                 let planAdvice = "";
                 if (has("PERFECT_DINING") || has("FOOD_MEAL")) {
                     planAdvice = `촛불이 있는 분위기 좋은 근사한 레스토랑 예약 필수! ${timePref.includes("밤") ? "저녁 시간대 야경 창가석 추천." : "낮 햇살 좋은 테라스 추천."}`;
@@ -910,7 +893,6 @@
                         <span class="text-[10px] text-slate-400 font-normal">${entry.date}</span>
                     </div>
 
-                    <!-- 📊 Answer Pattern Summary Banner -->
                     <div class="bg-indigo-900 text-white p-3 rounded-xl text-[11px] space-y-1.5 shadow-sm">
                         <div class="font-extrabold text-amber-300 border-b border-indigo-700/60 pb-1 flex justify-between items-center">
                             <span>📊 응답 패턴 & 고민 분석 요약</span>
@@ -933,32 +915,27 @@
                         </div>
                     ` : ''}
 
-                    <!-- Summary Badges -->
                     <div class="grid grid-cols-2 gap-1.5 text-[11px] font-semibold text-slate-700">
                         <div class="bg-white p-2 rounded-lg border border-slate-200">⏱️ ${timePref}</div>
                         <div class="bg-white p-2 rounded-lg border border-slate-200">${foodPref}</div>
                         <div class="bg-white p-2 rounded-lg border border-slate-200 col-span-2">${eventPref}</div>
                     </div>
 
-                    <!-- Multi Choice Wish -->
                     <div class="bg-blue-50/70 p-2.5 rounded-xl border border-blue-100 text-[11px] text-blue-950">
                         <span class="font-bold block mb-1">🎉 원하는 완벽한 생일:</span>
                         <span>${perfectBdayChoice}</span>
                     </div>
 
-                    <!-- Free Text Secret Wish -->
                     <div class="bg-amber-50/70 p-2.5 rounded-xl border border-amber-200 text-[11px] text-amber-950">
                         <span class="font-bold block mb-0.5">💬 은근히 하고 싶은 것 (자유응답):</span>
                         <p class="font-normal italic">"${wishText}"</p>
                     </div>
 
-                    <!-- Birthday Action Guide -->
                     <div class="bg-slate-900 text-white p-3 rounded-xl text-[11px] leading-relaxed">
                         <span class="text-amber-400 font-bold block mb-1">💡 [기획 추천] 이 사람의 생일을 준비한다면?</span>
                         <p class="opacity-95">${planAdvice}</p>
                     </div>
 
-                    <!-- Toggle Section 1: Final Answers -->
                     <details class="text-[11px] text-slate-600 pt-1">
                         <summary class="cursor-pointer font-bold hover:text-slate-900 transition flex items-center justify-between bg-white p-2 rounded-lg border border-slate-200">
                             <span>① 최종 선택 답변 목록 (${finalAnswers.length}개 문항)</span>
@@ -974,7 +951,6 @@
                         </div>
                     </details>
 
-                    <!-- Toggle Section 2: Full Append-only Change Timeline -->
                     <details class="text-[11px] text-slate-600">
                         <summary class="cursor-pointer font-bold hover:text-slate-900 transition flex items-center justify-between bg-slate-100 p-2 rounded-lg border border-slate-200 text-slate-800">
                             <span>② 선택 변경 이력 및 소요시간 타임라인 (${history.length}건 기록)</span>
