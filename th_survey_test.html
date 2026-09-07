@@ -1,0 +1,1037 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>2026년 생일파티 사전 수요 및 선호도 조사</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Pretendard', sans-serif;
+            background: linear-gradient(135deg, #f0f4f8 0%, #e2e8f0 50%, #dbeafe 100%);
+            min-height: 100vh;
+        }
+
+        .fade-in {
+            animation: fadeIn 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px) scale(0.98);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        .btn-option {
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .btn-option:active {
+            transform: scale(0.98);
+        }
+
+        .custom-shadow {
+            box-shadow: 0 20px 40px -15px rgba(30, 58, 138, 0.12);
+        }
+
+        /* Secret tap target style */
+        .secret-trigger {
+            user-select: none;
+            -webkit-user-select: none;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body class="flex items-center justify-center p-3 sm:p-4 min-h-screen">
+
+    <div class="w-full max-w-md bg-white/95 backdrop-blur-md rounded-3xl p-5 sm:p-8 custom-shadow border border-slate-200/80 relative overflow-hidden my-auto">
+        
+        <!-- ================= START SCREEN ================= -->
+        <div id="start-screen" class="fade-in text-center py-2">
+            <div class="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-blue-50 text-blue-600 mb-4 shadow-sm border border-blue-100">
+                <i class="fa-solid fa-clipboard-list text-2xl"></i>
+            </div>
+            
+            <span class="inline-block px-3 py-1 bg-blue-100/80 text-blue-700 rounded-full text-xs font-bold tracking-wide mb-3">
+                🏛️ 2026 공식 선호도 조사
+            </span>
+            
+            <!-- Hidden Secret 5-Tap Zone on Title -->
+            <h1 onclick="registerSecretClick()" class="secret-trigger text-xl sm:text-2xl font-extrabold text-slate-800 tracking-tight leading-snug mb-4 hover:text-slate-900 transition-colors">
+                「2026년 생일파티 사전 수요 및 선호도 조사」
+            </h1>
+
+            <!-- Official Notice Box -->
+            <div class="bg-slate-50 border border-slate-200 rounded-2xl p-4 text-left text-xs text-slate-600 leading-relaxed mb-5 shadow-inner">
+                <p class="font-medium">
+                    본 조사는 소중한 의견을 듣고 더 나은 서비스와 환경을 만들어가기 위해 진행됩니다. 잠시 시간을 내어 설문에 참여해 주시면 감사하겠습니다. 보내주신 의견은 향후 개선을 위한 소중한 자료로 활용하겠습니다. 많은 참여 부탁드립니다.
+                </p>
+            </div>
+
+            <!-- Name Input Box -->
+            <div class="bg-blue-50/50 p-4 rounded-2xl mb-6 text-left border border-blue-100">
+                <label for="friend-name" class="block text-xs font-bold text-slate-700 mb-1.5">
+                    ✨ 이름을 입력하세요
+                </label>
+                <div class="relative flex gap-2">
+                    <input type="text" id="friend-name" placeholder="예: 지은이, 민수" 
+                        class="w-full px-4 py-2.5 bg-white border border-slate-300 rounded-xl text-slate-800 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 font-medium"
+                        value="지은이">
+                    <button type="button" onclick="updateFriendName()" class="text-xs bg-blue-600 hover:bg-blue-700 text-white font-bold px-4 py-2.5 rounded-xl transition shrink-0">
+                        확인
+                    </button>
+                </div>
+            </div>
+
+            <button onclick="startTest()" class="w-full py-4 bg-slate-900 hover:bg-slate-800 text-white font-bold rounded-2xl shadow-lg text-base transition duration-200 active:scale-95 flex items-center justify-center gap-2">
+                <span>시작하기</span>
+                <i class="fa-solid fa-arrow-right text-xs"></i>
+            </button>
+        </div>
+
+        <!-- ================= QUESTION SCREEN ================= -->
+        <div id="question-screen" class="hidden">
+            <!-- Header Progress & Back Button -->
+            <div class="flex items-center justify-between mb-3">
+                <button onclick="prevQuestion()" class="text-xs font-semibold text-slate-500 hover:text-slate-800 flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 transition active:scale-95">
+                    <i class="fa-solid fa-chevron-left text-[10px]"></i>
+                    <span>이전</span>
+                </button>
+                <div class="flex items-center gap-2 text-xs font-bold">
+                    <span id="question-step" class="text-blue-600">Q1</span>
+                    <span id="progress-percent" class="text-slate-400">8%</span>
+                </div>
+            </div>
+            
+            <!-- Progress Bar -->
+            <div class="w-full bg-slate-100 h-2 rounded-full overflow-hidden mb-5">
+                <div id="progress-bar" class="bg-blue-600 h-full w-0 transition-all duration-300 ease-out rounded-full"></div>
+            </div>
+
+            <!-- Question Card -->
+            <div id="question-card" class="fade-in min-h-[360px] flex flex-col justify-between">
+                <div>
+                    <div class="inline-block px-2.5 py-1 bg-slate-100 text-slate-600 rounded-md text-xs font-bold mb-3 border border-slate-200" id="question-tag">
+                        Q1
+                    </div>
+                    <h2 id="question-text" class="text-lg sm:text-xl font-bold text-slate-800 leading-snug mb-2">
+                        질문 내용이 들어가는 자리입니다.
+                    </h2>
+                    <p id="question-subtext" class="text-xs font-semibold text-blue-600 mb-4 hidden">
+                        (2개 선택가능)
+                    </p>
+                </div>
+
+                <!-- Options / Inputs Dynamic Container -->
+                <div id="options-container" class="space-y-2.5 mb-3">
+                    <!-- Dynamically rendered choices / inputs -->
+                </div>
+
+                <!-- Next Button (For Multi-select & Text input) -->
+                <div id="next-button-container" class="hidden pt-2">
+                    <button id="next-btn" onclick="submitCurrentAnswer()" class="w-full py-3.5 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl text-sm transition shadow-md active:scale-95 flex items-center justify-center gap-2">
+                        <span>다음 질문으로</span>
+                        <i class="fa-solid fa-arrow-right text-xs"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- ================= LOADING SCREEN ================= -->
+        <div id="loading-screen" class="hidden text-center py-16">
+            <div class="inline-block relative w-12 h-12 mb-4">
+                <div class="absolute top-0 left-0 w-full h-full border-4 border-blue-200 border-t-blue-600 rounded-full animate-spin"></div>
+            </div>
+            <h3 class="text-base font-bold text-slate-800 mb-1">설문 데이터를 처리 중입니다...</h3>
+            <p class="text-xs text-slate-500">응답 결과를 바탕으로 분석 보고서를 작성하고 있습니다.</p>
+        </div>
+
+        <!-- ================= RESULT SCREEN (RESPONDENT VIEW) ================= -->
+        <div id="result-screen" class="hidden fade-in py-1">
+            <div class="text-center mb-4">
+                <span class="inline-block px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-xs font-bold mb-3">
+                    📋 설문 분석 결과
+                </span>
+                
+                <!-- Hidden Secret 5-Tap Zone on Title -->
+                <h2 onclick="registerSecretClick()" class="secret-trigger text-lg sm:text-xl font-extrabold text-slate-800 leading-snug hover:text-slate-900 transition-colors">
+                    <span id="result-friend-name" class="text-blue-600">OO</span>의 성향 분석 결과<br>
+                    <span class="text-blue-600">「<span id="result-type-title">소소한 행복 추구형</span>」</span>입니다.
+                </h2>
+            </div>
+
+            <!-- Star Ratings Section -->
+            <div class="bg-blue-50/60 border border-blue-100 rounded-2xl p-4 mb-4 text-xs font-medium space-y-2.5 text-slate-700">
+                <div class="flex justify-between items-center">
+                    <span class="font-bold">관계 지향도</span>
+                    <span class="text-amber-500 text-xs tracking-wider">⭐⭐⭐⭐⭐</span>
+                </div>
+                <div class="flex justify-between items-center">
+                    <span class="font-bold">감성 민감도</span>
+                    <span class="text-amber-500 text-xs tracking-wider" id="star-sensitivity">⭐⭐⭐⭐☆</span>
+                </div>
+                <div class="flex justify-between items-center">
+                    <span class="font-bold">즉흥성</span>
+                    <span class="text-amber-500 text-xs tracking-wider" id="star-spontaneity">⭐⭐⭐☆☆</span>
+                </div>
+            </div>
+
+            <!-- 5 Traits Container -->
+            <div id="traits-container" class="space-y-2.5 mb-5">
+                <!-- Dynamically Inserted Traits -->
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="space-y-2">
+                <button onclick="copyResult()" class="w-full py-3.5 bg-blue-600 hover:bg-blue-700 text-white text-sm font-bold rounded-xl flex items-center justify-center gap-2 transition active:scale-95 shadow-md">
+                    <i class="fa-regular fa-copy"></i>
+                    <span>결과 보고서 복사하기</span>
+                </button>
+                
+                <button onclick="restartTest()" class="w-full py-3 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold rounded-xl flex items-center justify-center gap-2 transition">
+                    <i class="fa-solid fa-rotate-right"></i>
+                    <span>다시 응답하기</span>
+                </button>
+            </div>
+
+            <!-- Updated Footer Notice -->
+            <p class="text-[11px] text-slate-500 text-center mt-5 font-medium leading-relaxed px-2">
+                본 결과는 향후 맞춤형 일정을 위한 내부자료로 활용될 예정입니다.<br>
+                귀하의 협조에 깊이 감사드립니다.
+            </p>
+        </div>
+
+        <!-- ================= SECRET ADMIN DASHBOARD ================= -->
+        <div id="admin-screen" class="hidden fade-in py-1">
+            <div class="flex items-center justify-between border-b border-slate-200 pb-3 mb-4">
+                <div>
+                    <span class="inline-block px-2.5 py-0.5 bg-red-100 text-red-700 rounded text-[10px] font-extrabold tracking-wider uppercase mb-1">
+                        CONFIDENTIAL
+                    </span>
+                    <h2 class="text-base sm:text-lg font-black text-slate-900 tracking-tight flex items-center gap-1.5">
+                        <span>🔐 BIRTHDAY PROJECT</span>
+                    </h2>
+                </div>
+                <button onclick="exitAdmin()" class="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg text-xs font-bold transition">
+                    닫기
+                </button>
+            </div>
+
+            <div class="text-xs text-slate-600 mb-4 bg-slate-50 p-3 rounded-xl border border-slate-200">
+                💡 <span class="font-bold">기획자 전용 대시보드</span>: 본 화면은 응답자의 원본 선택지, 심리적 고민 이력(타임라인), 소요시간 및 생일파티 추천 가이드를 분석합니다.
+            </div>
+
+            <!-- Admin Response Cards List -->
+            <div id="admin-responses-list" class="space-y-4 max-h-[480px] overflow-y-auto pr-1">
+                <!-- Dynamically rendered responses -->
+            </div>
+
+            <div class="mt-4 pt-3 border-t border-slate-200 flex justify-between items-center text-xs">
+                <span class="text-slate-400 font-medium" id="admin-data-count">총 0건의 응답</span>
+                <button onclick="clearAdminData()" class="text-red-500 hover:text-red-700 font-bold hover:underline">
+                    데이터 초기화
+                </button>
+            </div>
+        </div>
+
+        <!-- Toast Notification -->
+        <div id="toast" class="fixed bottom-6 left-1/2 -translate-x-1/2 bg-slate-900/95 text-white text-xs font-semibold px-4 py-2.5 rounded-full shadow-lg opacity-0 pointer-events-none transition-opacity duration-300 z-50 flex items-center gap-2 border border-slate-700">
+            <i class="fa-solid fa-circle-check text-emerald-400"></i>
+            <span id="toast-message">복사되었습니다.</span>
+        </div>
+
+    </div>
+
+    <script>
+        // State
+        let friendName = "지은이";
+        let currentQuestion = 0;
+        let userAnswers = []; // Final response per question
+        let multiSelected = []; // For multi-select question
+        
+        // Append-only Event Log and Time Tracking State
+        let appendOnlyEvents = []; // Append-only log of ALL selections made
+        let questionStartTime = 0; // Timestamp when a question step is loaded
+        let questionVisitCounts = {}; // { qId: count }
+
+        // Secret 5-Tap state
+        let secretClickCount = 0;
+        let secretTimer = null;
+
+        // 12 Carefully Designed Disguised Questions (Q8 removed, Q11 updated, Q12 updated)
+        const questions = [
+            {
+                id: 1,
+                question: "갑자기 애인 생각이 날 때 나는",
+                type: "single",
+                options: [
+                    { text: '바로 "너가 생각났어"하고 톡 보낸다', key: "EXPRESS_WORD", tag: "표현: 직진형" },
+                    { text: '그냥 혼자 생각하다 넘어간다', key: "EXPRESS_ACT", tag: "표현: 은은형" }
+                ]
+            },
+            {
+                id: 2,
+                question: '애인이 "오늘 뭐 할까?" 라고 묻는다.',
+                type: "single",
+                options: [
+                    { text: '내가 좋은 데 생각해놨어!', key: "LEAD_PLAN", tag: "데이트: 주도형" },
+                    { text: '하고 싶은 거 있어? 라고 묻는다', key: "LEAD_ADAPT", tag: "데이트: 배려형" }
+                ]
+            },
+            {
+                id: 3,
+                question: '애인이 갑자기 "지금 나올래?" 라고 연락했을 때',
+                type: "single",
+                options: [
+                    { text: '너무 좋아! 준비하고 바로 나간다', key: "SURPRISE_LIKE", tag: "즉흥성: 매우높음" },
+                    { text: '아... 미리 말해주지... 고민하다 거절한다', key: "SURPRISE_HATE", tag: "즉흥성: 계획파" }
+                ]
+            },
+            {
+                id: 4,
+                question: "상대방이 한 말의 의미를",
+                type: "single",
+                options: [
+                    { text: '자주 생각해본다', key: "DEEP_THINK", tag: "감수성: 세심함" },
+                    { text: '그냥 말한 그대로 받아들인다', key: "SIMPLE_THINK", tag: "감수성: 쿨함" }
+                ]
+            },
+            {
+                id: 5,
+                question: "애인의 기분이 유독 다운되어 보일 때 나는",
+                type: "single",
+                options: [
+                    { text: '나 때문에 그런가? 눈치 보며 이유를 찾는다', key: "SENSITIVE_CARE", tag: "케어: 민감함" },
+                    { text: '컨디션이 별로인가? 가볍게 물어본다', key: "EASY_CARE", tag: "케어: 담담함" }
+                ]
+            },
+            {
+                id: 6,
+                question: "데이트 시간대로 내가 더 선호하는 분위기는?",
+                type: "single",
+                options: [
+                    { text: '햇빛 따스하고 선선한 바람이 부는 낮 시간대', key: "TIME_DAY", tag: "시간대: 낮 데이트" },
+                    { text: '아름다운 야경과 신비로운 분위기의 밤 시간대', key: "TIME_NIGHT", tag: "시간대: 밤 야경" }
+                ]
+            },
+            {
+                id: 7,
+                question: "하루 중 내가 가장 기분이 좋은 시간은?",
+                type: "single",
+                options: [
+                    { text: '여유로운 오전~오후', key: "MOOD_DAY", tag: "기분 피크: 낮 시간" },
+                    { text: '분위기가 살아나는 저녁~밤', key: "MOOD_NIGHT", tag: "기분 피크: 저녁~밤" }
+                ]
+            },
+            {
+                id: 8,
+                question: "특별한 날에 먹는다면 더 끌리는 메뉴는",
+                type: "single",
+                options: [
+                    { text: '근사한 분위기에서 즐기는 맛있는 메인 식사', key: "FOOD_MEAL", tag: "음식: 메인 파인다이닝" },
+                    { text: '예쁜 카페에서 즐기는 퀄리티 높은 디저트와 음료', key: "FOOD_DESSERT", tag: "음식: 감성 카페디저트" }
+                ]
+            },
+            {
+                id: 9,
+                question: "나는 애인이",
+                type: "single",
+                options: [
+                    { text: '마음에 확신이 들게 표현해줬으면 좋겠다', key: "EXPRESS_CONFIRM", tag: "선물/표현: 확신과 표현" },
+                    { text: '내가 얘기했던 거 기억해서 챙겨줬으면 좋겠다', key: "EXPRESS_REMEMBER", tag: "선물/표현: 섬세한 기억" }
+                ]
+            },
+            {
+                id: 10,
+                question: "깜짝 이벤트에 대해서 나는",
+                type: "single",
+                options: [
+                    { text: '예상치 못한 깜짝 이벤트와 서프라이즈가 좋아!', key: "EVENT_SURPRISE", tag: "이벤트: 서프라이즈 환영" },
+                    { text: '미리 동선을 알고 준비되어 있는 데이트가 좋아!', key: "EVENT_PREPARED", tag: "이벤트: 사전 안내 선호" }
+                ]
+            },
+            {
+                id: 11,
+                question: " 완벽한 생일의 형태는?", 
+                type: "multi",
+                maxSelect: 2,
+                options: [
+                    { text: '근사한 레스토랑에서 촛불 켜고 로맨틱한 식사', key: "PERFECT_DINING" },
+                    { text: '감성 숙소나 프라이빗한 공간에서 둘만의 시간 보내기', key: "PERFECT_PRIVATE" },
+                    { text: '햇살 좋은 날 핫플 카페와 예쁜 거리에서 데이트', key: "PERFECT_HOTPLACE" },
+                    { text: '맛있는 거 먹고 좋은 경치 보면서 여유롭게 보내기', key: "PERFECT_NATURE" },
+                    { text: '아무 일정 없이 편안하게 쉬면서 힐링하기', key: "PERFECT_HEALING" }
+                ]
+            },
+            {
+                id: 12,
+                question: "아무에게도 말하지 않았지만 요즘 은근히 하고 싶은 것이 있다면?",
+                type: "text",
+                placeholder: "*작성하지 않고 넘어가도 괜찮........지만 작성해주시면 큰 도움이 됩니다."
+            }
+        ];
+
+        function registerSecretClick() {
+            secretClickCount++;
+            if (secretTimer) clearTimeout(secretTimer);
+
+            if (secretClickCount >= 5) {
+                secretClickCount = 0;
+                openAdminDashboard();
+                showToast("🔐 기획자 관리자 모드 진입");
+            } else {
+                secretTimer = setTimeout(() => {
+                    secretClickCount = 0;
+                }, 2000);
+            }
+        }
+
+        function updateFriendName() {
+            const input = document.getElementById("friend-name").value.trim();
+            if (input) {
+                friendName = input;
+                showToast(`이름이 '${friendName}'(으)로 설정되었습니다.`);
+            }
+        }
+
+        function startTest() {
+            const input = document.getElementById("friend-name").value.trim();
+            if (input) friendName = input;
+            
+            document.getElementById("start-screen").classList.add("hidden");
+            document.getElementById("question-screen").classList.remove("hidden");
+            
+            currentQuestion = 0;
+            userAnswers = [];
+            appendOnlyEvents = [];
+            questionVisitCounts = {};
+            renderQuestion();
+        }
+
+        function renderQuestion() {
+            const q = questions[currentQuestion];
+            const total = questions.length;
+            const progress = Math.round(((currentQuestion + 1) / total) * 100);
+
+            // Record question start time for precision measurement
+            questionStartTime = Date.now();
+            questionVisitCounts[q.id] = (questionVisitCounts[q.id] || 0) + 1;
+
+            // Update Progress Header
+            document.getElementById("question-step").textContent = `Q${currentQuestion + 1}`;
+            document.getElementById("progress-percent").textContent = `${progress}%`;
+            document.getElementById("progress-bar").style.width = `${progress}%`;
+
+            // Card Animation
+            const card = document.getElementById("question-card");
+            card.classList.remove("fade-in");
+            void card.offsetWidth;
+            card.classList.add("fade-in");
+
+            document.getElementById("question-tag").textContent = `Q${currentQuestion + 1}`;
+            
+            // Format Question Text dynamically
+            if (q.id === 11) {
+                document.getElementById("question-text").textContent = `${friendName}이(가) 생각하는 '완벽한 생일'의 형태는?`;
+                document.getElementById("question-subtext").classList.remove("hidden");
+            } else {
+                document.getElementById("question-text").textContent = q.question;
+                document.getElementById("question-subtext").classList.add("hidden");
+            }
+
+            const container = document.getElementById("options-container");
+            container.innerHTML = "";
+            const nextBtnContainer = document.getElementById("next-button-container");
+
+            if (q.type === "single") {
+                nextBtnContainer.classList.add("hidden");
+                const optionLabels = ['A', 'B', 'C', 'D', 'E', 'F'];
+
+                q.options.forEach((opt, idx) => {
+                    const btn = document.createElement("button");
+                    btn.onclick = () => selectSingleOption(idx);
+                    btn.className = `btn-option w-full p-3.5 text-left bg-slate-50 hover:bg-blue-50/80 border border-slate-200 hover:border-blue-300 rounded-xl text-slate-800 text-xs sm:text-sm font-semibold leading-relaxed flex items-center gap-3 group`;
+                    
+                    btn.innerHTML = `
+                        <span class="w-6 h-6 rounded-lg bg-white border border-slate-300 group-hover:border-blue-500 group-hover:bg-blue-600 group-hover:text-white flex items-center justify-center text-xs font-bold text-slate-500 shrink-0 transition">
+                            ${optionLabels[idx]}
+                        </span>
+                        <span>${opt.text}</span>
+                    `;
+                    container.appendChild(btn);
+                });
+            } else if (q.type === "multi") {
+                nextBtnContainer.classList.remove("hidden");
+                multiSelected = [];
+
+                q.options.forEach((opt, idx) => {
+                    const btn = document.createElement("button");
+                    btn.id = `multi-opt-${idx}`;
+                    btn.onclick = () => toggleMultiOption(idx);
+                    btn.className = `btn-option w-full p-3 text-left bg-slate-50 hover:bg-slate-100 border border-slate-200 rounded-xl text-slate-800 text-xs sm:text-sm font-medium leading-normal flex items-center justify-between transition group`;
+                    
+                    btn.innerHTML = `
+                        <span>${opt.text}</span>
+                        <span id="multi-check-${idx}" class="w-5 h-5 rounded-md border border-slate-300 flex items-center justify-center text-xs text-white bg-white shrink-0 transition">
+                            <i class="fa-solid fa-check text-[10px]"></i>
+                        </span>
+                    `;
+                    container.appendChild(btn);
+                });
+            } else if (q.type === "text") {
+                nextBtnContainer.classList.remove("hidden");
+                
+                const wrapper = document.createElement("div");
+                wrapper.className = "py-2";
+                wrapper.innerHTML = `
+                    <textarea id="free-text-input" rows="4" placeholder="${q.placeholder}"
+                        class="w-full p-3.5 bg-slate-50 border border-slate-300 rounded-2xl text-slate-800 text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white transition leading-relaxed font-medium resize-none"></textarea>
+                `;
+                container.appendChild(wrapper);
+            }
+        }
+
+        function recordAppendOnlyEvent(q, choiceText, keyOrKeys) {
+            const timeSpentMs = Date.now() - questionStartTime;
+            const timeSpentSec = +(timeSpentMs / 1000).toFixed(1);
+
+            // Check how many previous choices were recorded for this question ID
+            const prevQEvents = appendOnlyEvents.filter(e => e.qId === q.id);
+            const isFirstSelection = prevQEvents.length === 0;
+
+            const eventObj = {
+                eventId: Date.now() + "_" + Math.random().toString(36).substr(2, 4),
+                qId: q.id,
+                qStep: currentQuestion + 1,
+                qTitle: q.id === 11 ? `${friendName}이(가) 생각하는 '완벽한 생일'의 형태` : q.question,
+                choiceText: choiceText,
+                keyOrKeys: keyOrKeys,
+                timeSpentMs: timeSpentMs,
+                timeSpentSec: timeSpentSec,
+                isFirstSelection: isFirstSelection,
+                visitNumber: questionVisitCounts[q.id] || 1,
+                timestamp: new Date().toLocaleTimeString('ko-KR')
+            };
+
+            appendOnlyEvents.push(eventObj);
+            return eventObj;
+        }
+
+        function selectSingleOption(idx) {
+            const q = questions[currentQuestion];
+            const selected = q.options[idx];
+
+            // Record append-only event
+            recordAppendOnlyEvent(q, selected.text, selected.key);
+
+            // Update or push final answer for this question
+            const existingIdx = userAnswers.findIndex(a => a.qId === q.id);
+            const answerObj = {
+                qId: q.id,
+                qStep: currentQuestion + 1,
+                question: q.question,
+                answerText: selected.text,
+                key: selected.key,
+                tag: selected.tag
+            };
+
+            if (existingIdx > -1) {
+                userAnswers[existingIdx] = answerObj;
+            } else {
+                userAnswers.push(answerObj);
+            }
+
+            nextQuestionStep();
+        }
+
+        function toggleMultiOption(idx) {
+            const q = questions[currentQuestion];
+            const pos = multiSelected.indexOf(idx);
+
+            if (pos > -1) {
+                multiSelected.splice(pos, 1);
+            } else {
+                if (multiSelected.length >= q.maxSelect) {
+                    showToast(`최대 ${q.maxSelect}개까지 선택할 수 있습니다.`);
+                    return;
+                }
+                multiSelected.push(idx);
+            }
+
+            // Update UI
+            q.options.forEach((_, i) => {
+                const btn = document.getElementById(`multi-opt-${i}`);
+                const check = document.getElementById(`multi-check-${i}`);
+                if (multiSelected.includes(i)) {
+                    btn.classList.add("bg-blue-50", "border-blue-400", "text-blue-900");
+                    btn.classList.remove("bg-slate-50", "border-slate-200");
+                    check.classList.add("bg-blue-600", "border-blue-600");
+                    check.classList.remove("bg-white", "border-slate-300");
+                } else {
+                    btn.classList.remove("bg-blue-50", "border-blue-400", "text-blue-900");
+                    btn.classList.add("bg-slate-50", "border-slate-200");
+                    check.classList.remove("bg-blue-600", "border-blue-600");
+                    check.classList.add("bg-white", "border-slate-300");
+                }
+            });
+        }
+
+        function submitCurrentAnswer() {
+            const q = questions[currentQuestion];
+
+            if (q.type === "multi") {
+                if (multiSelected.length === 0) {
+                    showToast("최소 1개 이상 선택해주세요!");
+                    return;
+                }
+                const selectedTexts = multiSelected.map(i => q.options[i].text);
+                const selectedKeys = multiSelected.map(i => q.options[i].key);
+                const formattedChoice = selectedTexts.join(" / ");
+
+                recordAppendOnlyEvent(q, formattedChoice, selectedKeys);
+
+                const answerObj = {
+                    qId: q.id,
+                    qStep: currentQuestion + 1,
+                    question: `${friendName}이(가) 생각하는 '완벽한 생일'의 형태`,
+                    answerText: formattedChoice,
+                    keys: selectedKeys
+                };
+
+                const existingIdx = userAnswers.findIndex(a => a.qId === q.id);
+                if (existingIdx > -1) {
+                    userAnswers[existingIdx] = answerObj;
+                } else {
+                    userAnswers.push(answerObj);
+                }
+
+            } else if (q.type === "text") {
+                const textVal = document.getElementById("free-text-input").value.trim() || "특별히 응답 없음";
+                recordAppendOnlyEvent(q, textVal, "FREE_TEXT");
+
+                const answerObj = {
+                    qId: q.id,
+                    qStep: currentQuestion + 1,
+                    question: q.question,
+                    answerText: textVal
+                };
+
+                const existingIdx = userAnswers.findIndex(a => a.qId === q.id);
+                if (existingIdx > -1) {
+                    userAnswers[existingIdx] = answerObj;
+                } else {
+                    userAnswers.push(answerObj);
+                }
+            }
+
+            nextQuestionStep();
+        }
+
+        function nextQuestionStep() {
+            currentQuestion++;
+            if (currentQuestion < questions.length) {
+                renderQuestion();
+            } else {
+                showLoadingAndCalculate();
+            }
+        }
+
+        function prevQuestion() {
+            if (currentQuestion > 0) {
+                currentQuestion--;
+                renderQuestion();
+            } else {
+                document.getElementById("question-screen").classList.add("hidden");
+                document.getElementById("start-screen").classList.remove("hidden");
+            }
+        }
+
+        function showLoadingAndCalculate() {
+            document.getElementById("question-screen").classList.add("hidden");
+            document.getElementById("loading-screen").classList.remove("hidden");
+
+            // Save response data and append-only timeline logs
+            saveResponseDataLocally();
+
+            setTimeout(() => {
+                document.getElementById("loading-screen").classList.add("hidden");
+                document.getElementById("result-screen").classList.remove("hidden");
+                generateResults();
+            }, 900);
+        }
+
+        function generateResults() {
+            document.getElementById("result-friend-name").textContent = friendName;
+
+            const answerKeys = userAnswers.map(a => a.key).filter(Boolean);
+            const multiKeys = userAnswers.find(a => a.qId === 11)?.keys || [];
+            const has = (key) => answerKeys.includes(key) || multiKeys.includes(key);
+
+            // Personality Title
+            let typeTitle = "소소한 행복 추구형";
+            if (has("PERFECT_DINING")) typeTitle = "로맨틱 파인 다이닝파";
+            else if (has("PERFECT_PRIVATE")) typeTitle = "프라이빗 아늑 감성파";
+            else if (has("PERFECT_HOTPLACE")) typeTitle = "햇살 가득 핫플 데이트파";
+            else if (has("PERFECT_NATURE")) typeTitle = "자연 & 맛집 힐러형";
+            else if (has("PERFECT_HEALING")) typeTitle = "편안한 휴식 중심 힐링형";
+            else if (has("EVENT_SURPRISE")) typeTitle = "서프라이즈 감동 추구형";
+
+            document.getElementById("result-type-title").textContent = typeTitle;
+
+            // Dynamic Star Ratings
+            const sensitivityStar = (has("DEEP_THINK") || has("SENSITIVE_CARE") || has("EXPRESS_REMEMBER")) ? "⭐⭐⭐⭐⭐" : "⭐⭐⭐⭐☆";
+            const spontaneityStar = (has("SURPRISE_LIKE") || has("EVENT_SURPRISE")) ? "⭐⭐⭐⭐☆" : "⭐⭐⭐☆☆";
+            document.getElementById("star-sensitivity").textContent = sensitivityStar;
+            document.getElementById("star-spontaneity").textContent = spontaneityStar;
+
+            // 5 Disguised Traits (Without '항목' word)
+            let trait1 = (has("TIME_DAY") || has("MOOD_DAY"))
+                ? { title: "☀️ 햇살 가득 낮 시간대 선호", desc: "선선한 바람과 따스한 햇살 아래 낮에 즐기는 데이트에서 가장 큰 만족을 느낍니다.", bg: "bg-amber-50 border-amber-200 text-amber-900" }
+                : { title: "🌙 은은한 밤 야경 로맨티스트", desc: "아름다운 야경과 신비롭고 로맨틱한 분위기의 밤 시간대를 훨씬 더 선호합니다.", bg: "bg-indigo-50 border-indigo-200 text-indigo-900" };
+
+            let trait2 = has("FOOD_MEAL") 
+                ? { title: "🍽️ 근사한 맛있는 메인 요리 중심", desc: "특별한 날에는 분위기 있는 공간에서 즐기는 제대로 된 맛있는 식사를 중요하게 생각합니다.", bg: "bg-blue-50 border-blue-200 text-blue-900" }
+                : { title: "🧁 감성 디저트 & 카페 선호", desc: "맛있는 식사만큼이나 감성적인 디저트와 예쁜 카페에서 보내는 여유를 가치 있게 여깁니다.", bg: "bg-pink-50 border-pink-200 text-pink-900" };
+
+            let trait3 = has("EXPRESS_CONFIRM")
+                ? { title: "💬 마음의 확신을 주는 표현 선호", desc: "애정 어린 말과 확신을 주는 표현을 통해 마음의 안정과 기쁨을 얻는 편입니다.", bg: "bg-purple-50 border-purple-200 text-purple-900" }
+                : { title: "🎁 내가 한 말을 기억해주는 섬세함", desc: "무심코 지나치듯 했던 이야기까지 기억하고 챙겨주는 세심한 행동에 깊은 감동을 받습니다.", bg: "bg-emerald-50 border-emerald-200 text-emerald-900" };
+
+            let trait4 = has("SURPRISE_LIKE")
+                ? { title: "⚡ 분위기에 맞춘 즉흥 연출 좋아함", desc: "상황에 맞춰 유연하게 반응하며 즉흥적으로 떠나는 데이트에 기쁨을 얻습니다.", bg: "bg-rose-50 border-rose-200 text-rose-900" }
+                : { title: "☕ 여유롭고 안정적인 데이트 선호", desc: "서두르지 않고 차분하게 계획에 따라 여유를 느끼는 안락함을 선호합니다.", bg: "bg-teal-50 border-teal-200 text-teal-900" };
+
+            let trait5 = has("EVENT_SURPRISE")
+                ? { title: "🎁 예상치 못한 깜짝 서프라이즈 감동형", desc: "뜻밖의 깜짝 이벤트나 예상치 못한 선물 연출에 매우 큰 기대와 행복을 느낍니다.", bg: "bg-violet-50 border-violet-200 text-violet-900" }
+                : { title: "📋 잘 준비된 세심하고 안정적인 데이트", desc: "갑작스러운 상황보다는 미리 세심하게 잘 짜여진 안정적인 케어를 편안해합니다.", bg: "bg-slate-100 border-slate-300 text-slate-900" };
+
+            const traits = [trait1, trait2, trait3, trait4, trait5];
+            const container = document.getElementById("traits-container");
+            container.innerHTML = "";
+
+            traits.forEach((t) => {
+                const item = document.createElement("div");
+                item.className = `p-3 rounded-xl border ${t.bg} transition`;
+                item.innerHTML = `
+                    <h3 class="font-bold text-xs mb-1">${t.title}</h3>
+                    <p class="text-[11px] opacity-90 leading-relaxed font-normal">${t.desc}</p>
+                `;
+                container.appendChild(item);
+            });
+        }
+
+        function saveResponseDataLocally() {
+            const dateStr = new Date().toLocaleString('ko-KR', {
+                month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit'
+            });
+
+            const entry = {
+                id: Date.now(),
+                name: friendName,
+                date: dateStr,
+                finalAnswers: [...userAnswers],
+                eventHistory: [...appendOnlyEvents] // Append-only timeline
+            };
+
+            let existing = [];
+            try {
+                existing = JSON.parse(localStorage.getItem("bday_survey_admin_data")) || [];
+            } catch (e) {
+                existing = [];
+            }
+
+            existing.unshift(entry);
+            localStorage.setItem("bday_survey_admin_data", JSON.stringify(existing));
+        }
+
+        function openAdminDashboard() {
+            document.getElementById("start-screen").classList.add("hidden");
+            document.getElementById("question-screen").classList.add("hidden");
+            document.getElementById("result-screen").classList.add("hidden");
+            document.getElementById("admin-screen").classList.remove("hidden");
+
+            renderAdminDashboard();
+        }
+
+        function exitAdmin() {
+            document.getElementById("admin-screen").classList.add("hidden");
+            document.getElementById("start-screen").classList.remove("hidden");
+        }
+
+        function renderAdminDashboard() {
+            let data = [];
+            try {
+                data = JSON.parse(localStorage.getItem("bday_survey_admin_data")) || [];
+            } catch (e) {
+                data = [];
+            }
+
+            const countEl = document.getElementById("admin-data-count");
+            countEl.textContent = `총 ${data.length}건의 저장된 응답`;
+
+            const listContainer = document.getElementById("admin-responses-list");
+            listContainer.innerHTML = "";
+
+            if (data.length === 0) {
+                listContainer.innerHTML = `
+                    <div class="text-center py-12 text-slate-400 text-xs">
+                        <i class="fa-solid fa-folder-open text-2xl mb-2"></i>
+                        <p>아직 제출된 응답 데이터가 없습니다.</p>
+                        <p class="mt-1 text-[11px] text-slate-400">설문을 직접 1회 완료해보세요!</p>
+                    </div>
+                `;
+                return;
+            }
+
+            data.forEach((entry, idx) => {
+                const card = document.createElement("div");
+                card.className = "bg-slate-50 border border-slate-200 rounded-2xl p-4 text-xs font-medium space-y-3.5 relative";
+
+                const history = entry.eventHistory || [];
+                const finalAnswers = entry.finalAnswers || [];
+
+                // Synthesize key tags from final answers
+                const keys = finalAnswers.map(a => a.key).filter(Boolean);
+                const multiKeys = finalAnswers.find(a => a.qId === 11)?.keys || [];
+                const allKeys = [...keys, ...multiKeys];
+                const has = (k) => allKeys.includes(k);
+
+                const timePref = (has("TIME_DAY") || has("MOOD_DAY")) ? "☀️ 낮 (오전~오후)" : "🌙 밤 (저녁~야경)";
+                const foodPref = has("FOOD_MEAL") ? "🍽️ 분위기 레스토랑 식사" : "🧁 감성 디저트/카페";
+                const eventPref = (has("SURPRISE_LIKE") || has("EVENT_SURPRISE")) ? "🎁 깜짝 서프라이즈 환영" : "📋 사전예약/동선안내";
+                const wishText = finalAnswers.find(a => a.qId === 12)?.answerText || "없음";
+                const perfectBdayChoice = finalAnswers.find(a => a.qId === 11)?.answerText || "기본 선택";
+
+                // Detailed Timing & Change Analysis
+                // Group history by qId
+                let totalTimeSec = 0;
+                let totalChangesCount = 0;
+                let qStatsMap = {}; // { qId: { firstChoice, finalChoice, firstTimeSec, finalTimeSec, changesCount, historyList } }
+
+                history.forEach(ev => {
+                    totalTimeSec += ev.timeSpentSec || 0;
+                    if (!qStatsMap[ev.qId]) {
+                        qStatsMap[ev.qId] = {
+                            qStep: ev.qStep,
+                            qTitle: ev.qTitle,
+                            firstChoice: ev.choiceText,
+                            firstTimeSec: ev.timeSpentSec,
+                            finalChoice: ev.choiceText,
+                            finalTimeSec: ev.timeSpentSec,
+                            changesCount: 0,
+                            historyList: [ev]
+                        };
+                    } else {
+                        qStatsMap[ev.qId].changesCount += 1;
+                        qStatsMap[ev.qId].finalChoice = ev.choiceText;
+                        qStatsMap[ev.qId].finalTimeSec = ev.timeSpentSec;
+                        qStatsMap[ev.qId].historyList.push(ev);
+                        totalChangesCount += 1;
+                    }
+                });
+
+                const qStatsList = Object.values(qStatsMap);
+                const avgTimeSec = qStatsList.length ? (totalTimeSec / qStatsList.length).toFixed(1) : "0.0";
+                
+                // Find longest thought question & most changed question
+                let longestQ = qStatsList.length ? qStatsList.reduce((max, cur) => (cur.finalTimeSec > max.finalTimeSec ? cur : max), qStatsList[0]) : null;
+                let fastestQ = qStatsList.length ? qStatsList.reduce((min, cur) => (cur.firstTimeSec < min.firstTimeSec ? cur : min), qStatsList[0]) : null;
+                let mostChangedQ = qStatsList.length ? qStatsList.reduce((max, cur) => (cur.changesCount > max.changesCount ? cur : max), qStatsList[0]) : null;
+
+                // Build Decision Hesitation Insights
+                let hesitationInsights = [];
+                qStatsList.forEach(stat => {
+                    if (stat.changesCount > 0) {
+                        hesitationInsights.push(`• <b>Q${stat.qStep}</b>에서 답변을 ${stat.changesCount}회 변경했습니다. ("${stat.firstChoice}" → "${stat.finalChoice}")`);
+                    } else if (stat.finalTimeSec > 10) {
+                        hesitationInsights.push(`• <b>Q${stat.qStep}</b>에서 ${stat.finalTimeSec}초 동안 신중하게 생각 후 선택했습니다.`);
+                    }
+                });
+
+                // Generate Custom Birthday Planning Action Guide
+                let planAdvice = "";
+                if (has("PERFECT_DINING") || has("FOOD_MEAL")) {
+                    planAdvice = `촛불이 있는 분위기 좋은 근사한 레스토랑 예약 필수! ${timePref.includes("밤") ? "저녁 시간대 야경 창가석 추천." : "낮 햇살 좋은 테라스 추천."}`;
+                } else if (has("PERFECT_PRIVATE")) {
+                    planAdvice = `사람 많은 핫플보다는 감성 프라이빗 공간/숙소를 대여해서 둘만의 오붓한 케이크 파티를 연출해보세요.`;
+                } else if (has("PERFECT_HOTPLACE")) {
+                    planAdvice = `예쁜 디저트 카페와 거리를 함께 거니는 데이트 추천. 사진을 많이 남겨주면 아주 좋아할 것입니다!`;
+                } else {
+                    planAdvice = `너무 빽빽한 일정보다는 편안하고 자유롭게 휴식하며 맛있는 음식을 함께 먹는 안락한 하루를 선물하세요.`;
+                }
+
+                card.innerHTML = `
+                    <div class="flex items-center justify-between border-b border-slate-200 pb-2">
+                        <div class="flex items-center gap-2">
+                            <span class="w-6 h-6 rounded-full bg-blue-600 text-white font-bold text-[10px] flex items-center justify-center">
+                                #${data.length - idx}
+                            </span>
+                            <span class="font-bold text-slate-800 text-sm">${entry.name}</span>
+                        </div>
+                        <span class="text-[10px] text-slate-400 font-normal">${entry.date}</span>
+                    </div>
+
+                    <!-- 📊 Answer Pattern Summary Banner -->
+                    <div class="bg-indigo-900 text-white p-3 rounded-xl text-[11px] space-y-1.5 shadow-sm">
+                        <div class="font-extrabold text-amber-300 border-b border-indigo-700/60 pb-1 flex justify-between items-center">
+                            <span>📊 응답 패턴 & 고민 분석 요약</span>
+                            <span class="text-[10px] font-normal text-indigo-200">평균 ${avgTimeSec}초/문항</span>
+                        </div>
+                        <div class="grid grid-cols-2 gap-2 text-[10px] pt-0.5">
+                            <div>⏱️ <b>가장 오래 고민:</b> ${longestQ ? `Q${longestQ.qStep} (${longestQ.finalTimeSec}초)` : '없음'}</div>
+                            <div>⚡ <b>가장 빠른 선택:</b> ${fastestQ ? `Q${fastestQ.qStep} (${fastestQ.firstTimeSec}초)` : '없음'}</div>
+                            <div>🔄 <b>총 변경 횟수:</b> ${totalChangesCount}회</div>
+                            <div>🧐 <b>가장 고민한 문항:</b> ${mostChangedQ && mostChangedQ.changesCount > 0 ? `Q${mostChangedQ.qStep} (${mostChangedQ.changesCount}회)` : '없음'}</div>
+                        </div>
+                    </div>
+
+                    ${hesitationInsights.length > 0 ? `
+                        <div class="bg-amber-50 border border-amber-200 text-amber-900 p-2.5 rounded-xl text-[11px] leading-relaxed">
+                            <span class="font-bold block mb-1">🧐 응답자 고민 포인트 분석:</span>
+                            <div class="space-y-0.5 text-[10px] opacity-95">
+                                ${hesitationInsights.join('<br>')}
+                            </div>
+                        </div>
+                    ` : ''}
+
+                    <!-- Summary Badges -->
+                    <div class="grid grid-cols-2 gap-1.5 text-[11px] font-semibold text-slate-700">
+                        <div class="bg-white p-2 rounded-lg border border-slate-200">⏱️ ${timePref}</div>
+                        <div class="bg-white p-2 rounded-lg border border-slate-200">${foodPref}</div>
+                        <div class="bg-white p-2 rounded-lg border border-slate-200 col-span-2">${eventPref}</div>
+                    </div>
+
+                    <!-- Multi Choice Wish -->
+                    <div class="bg-blue-50/70 p-2.5 rounded-xl border border-blue-100 text-[11px] text-blue-950">
+                        <span class="font-bold block mb-1">🎉 원하는 완벽한 생일:</span>
+                        <span>${perfectBdayChoice}</span>
+                    </div>
+
+                    <!-- Free Text Secret Wish -->
+                    <div class="bg-amber-50/70 p-2.5 rounded-xl border border-amber-200 text-[11px] text-amber-950">
+                        <span class="font-bold block mb-0.5">💬 은근히 하고 싶은 것 (자유응답):</span>
+                        <p class="font-normal italic">"${wishText}"</p>
+                    </div>
+
+                    <!-- Birthday Action Guide -->
+                    <div class="bg-slate-900 text-white p-3 rounded-xl text-[11px] leading-relaxed">
+                        <span class="text-amber-400 font-bold block mb-1">💡 [기획 추천] 이 사람의 생일을 준비한다면?</span>
+                        <p class="opacity-95">${planAdvice}</p>
+                    </div>
+
+                    <!-- Toggle Section 1: Final Answers -->
+                    <details class="text-[11px] text-slate-600 pt-1">
+                        <summary class="cursor-pointer font-bold hover:text-slate-900 transition flex items-center justify-between bg-white p-2 rounded-lg border border-slate-200">
+                            <span>① 최종 선택 답변 목록 (${finalAnswers.length}개 문항)</span>
+                            <i class="fa-solid fa-chevron-down text-[10px]"></i>
+                        </summary>
+                        <div class="mt-2 space-y-1.5 pl-1 border-l-2 border-slate-300 py-1 text-[10px]">
+                            ${finalAnswers.map((a) => `
+                                <div>
+                                    <span class="font-bold text-slate-700">Q${a.qStep}. ${a.question}</span><br>
+                                    <span class="text-blue-600 font-semibold">➔ ${a.answerText}</span>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </details>
+
+                    <!-- Toggle Section 2: Full Append-only Change Timeline -->
+                    <details class="text-[11px] text-slate-600">
+                        <summary class="cursor-pointer font-bold hover:text-slate-900 transition flex items-center justify-between bg-slate-100 p-2 rounded-lg border border-slate-200 text-slate-800">
+                            <span>② 선택 변경 이력 및 소요시간 타임라인 (${history.length}건 기록)</span>
+                            <i class="fa-solid fa-clock-rotate-left text-[10px]"></i>
+                        </summary>
+                        <div class="mt-2 space-y-2 text-[10px]">
+                            ${qStatsList.map((stat) => {
+                                const isModified = stat.changesCount > 0;
+                                return `
+                                    <div class="p-2 rounded-lg border ${isModified ? 'bg-amber-50/80 border-amber-300' : 'bg-white border-slate-200'}">
+                                        <div class="flex justify-between items-center font-bold text-slate-800 mb-1">
+                                            <span>Q${stat.qStep}. ${stat.qTitle}</span>
+                                            ${isModified ? '<span class="text-[9px] bg-red-100 text-red-600 font-extrabold px-1.5 py-0.5 rounded">🔄 답변 변경 발생</span>' : ''}
+                                        </div>
+                                        <div class="text-slate-600 space-y-1 pl-1">
+                                            <div><b>최초 선택:</b> ${stat.firstChoice} <span class="text-slate-400">(${stat.firstTimeSec}초 소요)</span></div>
+                                            ${isModified ? `<div class="text-amber-800 font-semibold"><b>변경 이력 (${stat.changesCount}회):</b> ${stat.historyList.map(h => h.choiceText).join(' ➔ ')}</div>` : ''}
+                                            <div class="text-blue-700 font-bold"><b>최종 선택:</b> ${stat.finalChoice} <span class="text-slate-400">(${stat.finalTimeSec}초 소요)</span></div>
+                                        </div>
+                                    </div>
+                                `;
+                            }).join('')}
+                        </div>
+                    </details>
+                `;
+
+                listContainer.appendChild(card);
+            });
+        }
+
+        function clearAdminData() {
+            if (confirm("정말로 모든 응답 데이터를 삭제하시겠습니까?")) {
+                localStorage.removeItem("bday_survey_admin_data");
+                renderAdminDashboard();
+                showToast("데이터가 초기화되었습니다.");
+            }
+        }
+
+        function copyResult() {
+            const summaryText = `[📋 ${friendName}의 성향 분석 결과 보고서]\n` +
+                `- 성향 분석 완료: 「${document.getElementById("result-type-title").textContent}」\n` +
+                `- 본 결과는 향후 맞춤형 일정 및 이벤트 기획을 위한 내부자료로 활용될 예정입니다.\n` +
+                `설문 참여하기: ${window.location.href}`;
+
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(summaryText).then(() => {
+                    showToast("결과 요약이 복사되었습니다!");
+                }).catch(() => {
+                    fallbackCopy(summaryText);
+                });
+            } else {
+                fallbackCopy(summaryText);
+            }
+        }
+
+        function fallbackCopy(text) {
+            const textarea = document.createElement("textarea");
+            textarea.value = text;
+            textarea.style.position = "fixed";
+            textarea.style.opacity = "0";
+            document.body.appendChild(textarea);
+            textarea.select();
+            try {
+                document.execCommand("copy");
+                showToast("결과가 복사되었습니다!");
+            } catch (err) {
+                showToast("복사에 실패했습니다.");
+            }
+            document.body.removeChild(textarea);
+        }
+
+        function showToast(msg) {
+            const toast = document.getElementById("toast");
+            document.getElementById("toast-message").textContent = msg;
+            toast.classList.remove("opacity-0", "pointer-events-none");
+            setTimeout(() => {
+                toast.classList.add("opacity-0", "pointer-events-none");
+            }, 2500);
+        }
+
+        function restartTest() {
+            document.getElementById("result-screen").classList.add("hidden");
+            document.getElementById("start-screen").classList.remove("hidden");
+            currentQuestion = 0;
+            userAnswers = [];
+            multiSelected = [];
+            appendOnlyEvents = [];
+            questionVisitCounts = {};
+        }
+    </script>
+</body>
+</html>
